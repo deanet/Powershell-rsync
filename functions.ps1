@@ -22,30 +22,38 @@ Function countfds($dir)
 
 
 	#Emfanizei tous metrites fakelon kai arxeion
-    Write-Host --------- $dir ---------
-	Write-Host Directories found: $dircount
-	Write-Host Files found : $filescount
+    #Write-Host --------- $dir ---------
+	#Write-Host Directories found: $dircount
+	#Write-Host Files found : $filescount
 
-	if ($filescount -lt 1000)
+	Return $filescount
+}
+
+Function checking($ans, $path)
+{
+	if ($ans -lt 1000)
 	{
-		Write-Host Einai ligotero apo 1000 kai etrexa gia rsync
-		return 0
+	   Write-Host Rsyncing the $path
 	}
-
-	if (($filescount -gt 1000))
+	
+	if ($ans -gt 1000)
 	{
-	    Write-Host Einai megalitero apo 1000 kai thelei na ksanatreksei i countfds
-		$currentdir = Get-ChildItem -Recurse | Select-Object -Property Fullname
-		foreach ($item in $currentdir)
-		{
-		 		<#if ((($item.Fullname).Attributes -eq "Directory") -or (($item.Fullname).Attributes -eq "Readonly,Directory"))
-				{
-				   Write-Host "BIkkaaaa"
-		  		   countfds($item.Fullname)
-				}#>
-				$item.Fullname
-				countfds($item.Fullname)
-		}
+	   $dirs = Get-ChildItem $path
+	   foreach ($item in $dirs)
+	   {
+	   		$ans = countfds($item.Fullname)
+	   		checking $ans $item.Fullname
+	   }
 	}
+}
 
+Function Synchronize($dir)
+{
+ 	$temp = Get-Item $dir
+	$dirpaths = $temp.GetDirectories()
+	
+	foreach ($item in $dirpaths)
+	{
+	 	Write-Host Rsyncing $item.Fullname
+	}
 }

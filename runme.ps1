@@ -7,4 +7,6 @@ $path = pwd
 #Trexei tin sinartisi gia na metrisi posous fakelous kai posa
 #arxeia iparxoun sto $path
 
-countfds($path)
+$ans = countfds($path)
+
+checking $ans $path
