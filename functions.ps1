@@ -19,13 +19,6 @@ Function countfds($dir)
 			$filescount++
 		}
 	}
-
-
-	#Emfanizei tous metrites fakelon kai arxeion
-    #Write-Host --------- $dir ---------
-	#Write-Host Directories found: $dircount
-	#Write-Host Files found : $filescount
-
 	Return $filescount
 }
 
@@ -33,7 +26,8 @@ Function checking($ans, $path)
 {
 	if ($ans -lt 1000)
 	{
-	   Write-Host Rsyncing the $path
+	   #Kodikas gia na kalei tin Synchronize pano se auto to path
+	   Write-Host Rsyncing the $path which has $ans files
 	}
 	
 	if ($ans -gt 1000)
@@ -41,8 +35,11 @@ Function checking($ans, $path)
 	   $dirs = Get-ChildItem $path
 	   foreach ($item in $dirs)
 	   {
-	   		$ans = countfds($item.Fullname)
-	   		checking $ans $item.Fullname
+	        if (($item.Attributes -eq "Directory") -or ($item.Attributes -eq "Readonly,Directory"))
+	        {
+	           $ans = countfds($item.Fullname)
+	   		   checking $ans $item.Fullname
+	        }
 	   }
 	}
 }
@@ -51,9 +48,10 @@ Function Synchronize($dir)
 {
  	$temp = Get-Item $dir
 	$dirpaths = $temp.GetDirectories()
-	
+
 	foreach ($item in $dirpaths)
 	{
+	 	#Entoli Rsync gia na sigxronizei to kathe directory
 	 	Write-Host Rsyncing $item.Fullname
 	}
 }
