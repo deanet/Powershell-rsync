@@ -29,14 +29,14 @@ Function checking($ans, $path)
 	   #Kodikas gia na kalei tin Synchronize pano se auto to path
 	   Write-Host Rsyncing the $path which has $ans files
 	}
-	
+
 	if (($ans -gt 1000) -or ($ans -eq 1000))
-	{  
+	{
 	   Write-Host Rsyncing the $path only the files without the subfolders
-	   
+
 
 	   $dirs = Get-ChildItem $path
-	   
+
 	   #Kai gia kathe ena subfolder psaxnei na dei an o ipofakelos autos exei pano apo 1000 files
 	   foreach ($item in $dirs)
 	   {
@@ -46,7 +46,7 @@ Function checking($ans, $path)
 	   	   checking $ans $item.Fullname
 	        }
 	   }
-	   
+
 	}
 }
 
@@ -62,3 +62,14 @@ Function Synchronize($dir)
 	 	Write-Host Rsyncing $item.Fullname
 	}
 }
+
+
+#Arxikopoiei to path sto directory pou exei mpei to scriptaki
+$path = pwd
+
+#Trexei tin sinartisi gia na metrisi posous fakelous kai posa
+#arxeia iparxoun sto $path
+
+$ans = countfds($path)
+
+checking $ans $path
