@@ -69,7 +69,7 @@ Function checking($ans, $spath)
 		{
 			if (($item.Attributes -eq "Directory") -or ($item.Attributes -eq "Readonly,Directory"))
 				{
-				   $ans = countfds($item.Fullname)
+					$ans = countfds($item.Fullname)
 					checking $ans $item.Fullname
 			}
 		}
@@ -77,10 +77,11 @@ Function checking($ans, $spath)
 	}
 }
 
-#Arxikopoiei to path sto directory pou exei mpei to scriptaki
-$tool = "C:\rsync_project\rsync\rsync.exe -R -d --exclude='*/' -av -P "
-$srcpath = "C:\users\CML\downloads"
-$dest = "/cygdrive/c/users/CML/desktop/test/"
-$ans = countfds($srcpath)
+#Arxikes parametroi
+$tool = "C:\rsync_project\rsync\rsync.exe --log-file='/cygdrive/c/testme/rsync.log' -R -d --exclude='*/' -av -P "
+$srcpath = "C:\rsync_project"
+$dest = "/cygdrive/c/testme"
 
+#Arxika check sto src folder
+$ans = countfds($srcpath)
 checking $ans $srcpath
