@@ -22,54 +22,65 @@ Function countfds($dir)
 	Return $filescount
 }
 
-Function checking($ans, $path)
-{
-	if ($ans -lt 1000)
+Function checking($ans, $spath)
+{ 
+    $limit = 1000
+	if ($ans -lt $limit)
 	{
-	   #Kodikas gia na kalei tin Synchronize pano se auto to path
-	   Write-Host Rsyncing the $path which has $ans files
-	}
+		$dirs = Get-ChildItem $spath
+		foreach ($item in $dirs)
+		   {
+				if (($item.Attributes -eq "Directory") -or ($item.Attributes -eq "Readonly,Directory"))
+				{
+					$ans = countfds($item.Fullname)
+					checking $ans $item.Fullname
+				}
+			}
+		$paths = $spath.split("\")
+		$paths[0] = "/cygdrive/c"
+		$newpath = $paths -join "/"
+		$a = "/* "
+		$newpath = $newpath + $a
 
-	if (($ans -gt 1000) -or ($ans -eq 1000))
+		$src = $newpath
+		$command = $tool + $src + $dest
+		#start-job $command
+		invoke-expression "$tool $src $dest"
+
+     }
+
+	if (($ans -gt $limit) -or ($ans -eq $limit))
 	{
-	   Write-Host Rsyncing the $path only the files without the subfolders
+        $paths = $spath.split("\")
+		$paths[0] = "/cygdrive/c"
+		$newpath = $paths -join "/"
+		$a = "/* "
+		$newpath = $newpath + $a
 
+		$src = $newpath
+		$command = $tool + $src + $dest
+		#start-job $command
+		invoke-expression "$tool $src $dest"
 
-	   $dirs = Get-ChildItem $path
+		$dirs = Get-ChildItem $spath
 
-	   #Kai gia kathe ena subfolder psaxnei na dei an o ipofakelos autos exei pano apo 1000 files
-	   foreach ($item in $dirs)
-	   {
-	        if (($item.Attributes -eq "Directory") -or ($item.Attributes -eq "Readonly,Directory"))
-	        {
-	           $ans = countfds($item.Fullname)
-	   	   checking $ans $item.Fullname
-	        }
-	   }
+		#Kai gia kathe ena subfolder psaxnei na dei an o ipofakelos autos exei pano apo $limit files
+		foreach ($item in $dirs)
+		{
+			if (($item.Attributes -eq "Directory") -or ($item.Attributes -eq "Readonly,Directory"))
+				{
+				   $ans = countfds($item.Fullname)
+					checking $ans $item.Fullname
+			}
+		}
 
 	}
 }
-
-Function Synchronize($dir)
-{
- 	$temp = Get-Item $dir
-	$dirpaths = $temp.GetDirectories()
-	$dirfiles = $temp.GetFiles()
-
-	foreach ($item in $dirpaths)
-	{
-	 	#Entoli Rsync gia na sigxronizei to kathe directory
-	 	Write-Host Rsyncing $item.Fullname
-	}
-}
-
 
 #Arxikopoiei to path sto directory pou exei mpei to scriptaki
-$path = pwd
+$tool = "C:\rsync_project\rsync\rsync.exe -R -d --exclude='*/' -av -P "
+$srcpath = "C:\users\CML\downloads"
+$dest = "/cygdrive/c/users/CML/desktop/test/"
+$ans = countfds($srcpath)
 
-#Trexei tin sinartisi gia na metrisi posous fakelous kai posa
-#arxeia iparxoun sto $path
-
-$ans = countfds($path)
-
-checking $ans $path
+checking $ans $srcpath
